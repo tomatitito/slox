@@ -12,7 +12,7 @@ class Scanner(private val source: String):
       start = current
       scanToken()
     }
-    new Token(EOF, "", null, line) :: tokens
+    tokens ::: List(new Token(EOF, "", null, line))
 
   private def scanToken() =
     val c = advance()
@@ -74,13 +74,11 @@ class Scanner(private val source: String):
       while isDigit(peek()) do advance()
 
     val value = source.substring(start, current)
-    println(s"Number token: $value")
     addToken(NUMBER, value.toDouble)
     
   private def identifier(): Unit =
     while isAlphaNumeric(peek()) do advance()
     val text = source.substring(start, current)
-    println(s"Identified token: $text")
     val tokenType = Scanner.keywords.get(text) match {
       case Some(t) => t
       case None => IDENTIFIER
@@ -94,8 +92,8 @@ class Scanner(private val source: String):
   private def isAlphaNumeric(c: Char) = isAlpha(c) || isDigit(c)
 
   private def advance(): Char =
-    current += 1
-    source.charAt(current)
+    current += 1 // next time arouund current will point to the next character
+    source.charAt(current - 1)
 
   private def addToken(`type`: TokenType): Unit = addToken(`type`, null)
 
@@ -124,11 +122,7 @@ class Scanner(private val source: String):
     else source.charAt(current + 1)
 
   private def isAtEnd(): Boolean =
-    val out = current >= source.length - 1
-    println(s"Source length: ${source.length}")
-    println(s"Current index: $current")
-    println(s"Is at end: $out")
-    out
+    current >= source.length
 
 end Scanner
 

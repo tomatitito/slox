@@ -8,7 +8,7 @@ import java.io.InputStreamReader
 import java.io.BufferedReader
 
 @main def Lox(args: String*): Unit =
-  println("Hello world!")
+  println("Welcome to Slox!")
   if (args.length > 1) {
     println("Usage: slox [script]")
     System.exit(64)
@@ -37,7 +37,7 @@ private def runPrompt(args: String*): Unit =
   val reader = new BufferedReader(input)
 
   while (true) {
-    println("> ")
+    print("> ")
     val line = reader.readLine()
     if (line == null) {
       return
@@ -50,7 +50,7 @@ end runPrompt
 private def run(source: String): Unit =
   val scanner = Scanner(source) // to be implemented
   val tokens = scanner.scanTokens()
-  tokens.foreach(println)
+  tokens.foreach(t => print(s"$t "))
 end run
 
 private def error(line: Int, message: String): Unit =

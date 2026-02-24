@@ -1,3 +1,5 @@
+package slox
+
 import TokenType.*
 import java.io.StreamTokenizer
 

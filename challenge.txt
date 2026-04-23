@@ -1,0 +1,8 @@
+expr -> IDENTIFIER
+expr -> NUMBER
+expr -> expr "." IDENTIFIER
+expr -> expr "(" ")"
+expr -> expr "(" args ")"
+
+args -> expr
+args -> expr "," args

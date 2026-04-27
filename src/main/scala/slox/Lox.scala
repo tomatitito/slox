@@ -52,7 +52,8 @@ end runPrompt
 private def run(source: String): Unit =
   val scanner = Scanner(source) // to be implemented
   val tokens = scanner.scanTokens()
-  tokens.foreach(t => print(s"$t "))
+  val expression = new Parser(tokens).parse()
+  println(expression)
 end run
 
 private def error(line: Int, message: String): Unit =
@@ -61,3 +62,6 @@ private def error(line: Int, message: String): Unit =
 private def report(line: Int, where: String, message: String): Unit =
   System.err.println(s"[line $line] Error$where: $message")
   hadError = true
+  
+def error(token: Token, message: String): Unit =
+  if token.`type` == TokenType.EOF then report(token.line, "at end", message) else report(token.line, s"at ${token.lexeme}", message)

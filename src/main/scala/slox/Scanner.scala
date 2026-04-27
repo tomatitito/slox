@@ -11,12 +11,14 @@ class Scanner(private val source: String):
 
   def scanTokens(): List[Token] =
     while (!isAtEnd()) {
+      // println(s"in while loop, start: $start current: $current !isAtEnd: ${!isAtEnd()}")
       start = current
       scanToken()
     }
     tokens ::: List(new Token(EOF, "", null, line))
 
   private def scanToken() =
+    println("in scanToken")
     val c = advance()
     c match
       case '(' => addToken(LEFT_PAREN)

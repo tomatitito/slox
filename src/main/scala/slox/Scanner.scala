@@ -11,7 +11,6 @@ class Scanner(private val source: String):
 
   def scanTokens(): List[Token] =
     while (!isAtEnd()) {
-      // println(s"in while loop, start: $start current: $current !isAtEnd: ${!isAtEnd()}")
       start = current
       scanToken()
     }

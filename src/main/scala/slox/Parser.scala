@@ -9,6 +9,7 @@ class Parser(tokens: List[Token]):
   private var current = 0
   
   def parse() = 
+    println(s"tokens are: $tokens")
     try
       expression()
     catch
@@ -23,7 +24,7 @@ class Parser(tokens: List[Token]):
     while matchToken(TokenType.COMMA) do 
       val op = previous()
       val right = equality()
-      expr = Expr.Binary(expr, op, right)
+      expr = right 
     expr
 
   private def equality(): Expr =

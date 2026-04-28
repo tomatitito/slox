@@ -53,7 +53,7 @@ class Scanner(private val source: String):
       case '\n' => line += 1
       case '"'  => string()
       case _ =>
-        if (isDigit(peek())) then number()
+        if (isDigit(c)) then number()
         else if (isAlpha(c)) then identifier()
         else error(line, "unexpected character.")
 

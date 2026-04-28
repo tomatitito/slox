@@ -3,6 +3,7 @@ package slox
 import slox.Expr.Unary
 import scala.caps.consume
 import slox.{error as LoxError}
+import scala.compiletime.ops.double
 
 class Parser(tokens: List[Token]):
   private var current = 0
@@ -14,7 +15,16 @@ class Parser(tokens: List[Token]):
       case _: ParseError => null
 
   private def expression(): Expr =
-    equality()
+    comma()
+    
+  private def comma(): Expr = 
+    var expr = equality()
+    
+    while matchToken(TokenType.COMMA) do 
+      val op = previous()
+      val right = equality()
+      expr = Expr.Binary(expr, op, right)
+    expr
 
   private def equality(): Expr =
     var expr = comparison()
@@ -69,7 +79,9 @@ class Parser(tokens: List[Token]):
     currentToken.`type` match
       case TokenType.IDENTIFIER => Expr.Literal(currentToken.literal)
       case TokenType.STRING     => Expr.Literal(currentToken.literal)
-      case TokenType.NUMBER     => Expr.Literal(currentToken.literal)
+      case TokenType.NUMBER     => 
+        println("identified a number")
+        Expr.Literal(currentToken.literal)
       case TokenType.TRUE       => Expr.Literal(true)
       case TokenType.FALSE      => Expr.Literal(false)
       case TokenType.NIL        => Expr.Literal(null)

@@ -53,7 +53,8 @@ private def run(source: String): Unit =
   val scanner = Scanner(source) // to be implemented
   val tokens = scanner.scanTokens()
   val expression = new Parser(tokens).parse()
-  println(expression)
+  val astPrinter = new AstPrinter()
+  astPrinter.print(expression)
 end run
 
 private def error(line: Int, message: String): Unit =

@@ -6,7 +6,7 @@ import slox.Expr.Unary
 import slox.Expr.Literal
 
 class AstPrinter extends Expr.Visitor[String]:
-  def print(expr: Expr): String = expr.accept(this)
+  def print(expr: Expr): Unit = println(expr.accept(this))
   def visitBinaryExpr(expr: Binary): String = parenthesize(expr.operator.lexeme, expr.left, expr.right)
   def visitGroupingExpr(expr: Grouping): String = parenthesize("group", expr.expression)
   def visitLiteralExpr(expr: Literal): String = if expr.value == null then "nil" else parenthesize(expr.value.toString)

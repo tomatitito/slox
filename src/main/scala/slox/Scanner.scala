@@ -18,7 +18,6 @@ class Scanner(private val source: String):
     tokens ::: List(new Token(EOF, "", null, line))
 
   private def scanToken() =
-    println("in scanToken")
     val c = advance()
     c match
       case '(' => addToken(LEFT_PAREN)

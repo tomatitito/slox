@@ -7,16 +7,24 @@ import scala.compiletime.ops.double
 
 class Parser(tokens: List[Token]):
   private var current = 0
+  private var ternaryCondition: Expr | Null = null
   
   def parse() = 
-    println(s"tokens are: $tokens")
     try
       expression()
     catch
       case _: ParseError => null
 
   private def expression(): Expr =
-    comma()
+    val expr = comma()
+    if !isAtEnd() & matchToken(TokenType.TERNARY_IF) then
+      val condition = expr
+      val ifOperator = previous()
+      val thenExpr = expression()
+      val elseOperator = consume(TokenType.TERNARY_ELSE, "Expect ':' after then branch of ternary expression.")
+      val elseExpr = expression()
+      Expr.Ternary(condition, ifOperator, thenExpr, elseOperator, elseExpr)
+    else expr
     
   private def comma(): Expr = 
     var expr = equality()
@@ -80,19 +88,16 @@ class Parser(tokens: List[Token]):
     currentToken.`type` match
       case TokenType.IDENTIFIER => Expr.Literal(currentToken.literal)
       case TokenType.STRING     => Expr.Literal(currentToken.literal)
-      case TokenType.NUMBER     => 
-        println("identified a number")
-        Expr.Literal(currentToken.literal)
+      case TokenType.NUMBER     => Expr.Literal(currentToken.literal)
       case TokenType.TRUE       => Expr.Literal(true)
       case TokenType.FALSE      => Expr.Literal(false)
       case TokenType.NIL        => Expr.Literal(null)
       case TokenType.LEFT_PAREN =>
-        val leftParen = currentToken
-        val expr =  expression()
+        val expr = expression()
         consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
         Expr.Grouping(expr)
-      case _ => throw error(peek(), "Expect expression.")
-
+      case _ => throw error(currentToken, "Expect expression.")
+      
   private def matchToken(ts: TokenType*): Boolean =
     val currentToken = peek()
     if ts.contains(currentToken.`type`) then

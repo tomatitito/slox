@@ -28,9 +28,9 @@ var hadError = false
 
 @throws[IOException]
 private def runFile(path: String): Unit =
-  if (hadError) then System.exit(65)
   val bytes = Files.readAllBytes(Paths.get(path))
   run(new String(bytes, Charset.defaultCharset()))
+  if (hadError) then System.exit(65)
 end runFile
 
 @throws[IOException]

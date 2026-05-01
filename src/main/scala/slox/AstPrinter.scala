@@ -4,9 +4,11 @@ import slox.Expr.Binary
 import slox.Expr.Grouping
 import slox.Expr.Unary
 import slox.Expr.Literal
+import slox.Expr.Ternary
 
 class AstPrinter extends Expr.Visitor[String]:
   def print(expr: Expr): Unit = println(expr.accept(this))
+  def visitTernaryExpr(expr: Ternary): String = parenthesize("?:", expr.condition, expr.thenExpr, expr.elseExpr)
   def visitBinaryExpr(expr: Binary): String = parenthesize(expr.operator.lexeme, expr.left, expr.right)
   def visitGroupingExpr(expr: Grouping): String = parenthesize("group", expr.expression)
   def visitLiteralExpr(expr: Literal): String = if expr.value == null then "nil" else parenthesize(expr.value.toString)
@@ -23,7 +25,7 @@ class AstPrinter extends Expr.Visitor[String]:
   }
 
 object AstPrinter:
-  def main(args: Array[String]): Unit =
+  def demo(): Unit =
     // Build test expression from the book: -123 * (45.67)
     val expression = Binary(
       Unary(

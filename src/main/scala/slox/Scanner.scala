@@ -14,7 +14,7 @@ class Scanner(private val source: String):
       start = current
       scanToken()
     }
-    tokens ::: List(new Token(EOF, "", null, line))
+    tokens.reverse ::: List(new Token(EOF, "", null, line))
 
   private def scanToken() =
     val c = advance()
@@ -46,6 +46,8 @@ class Scanner(private val source: String):
           while peek() != '\n' && !isAtEnd() do advance()
           ()
         else addToken(SLASH)
+      case '?' => addToken(TERNARY_IF)
+      case ':' => addToken(TERNARY_ELSE)
       case ' '  => ()
       case '\t' => ()
       case '\r' => ()

@@ -12,6 +12,7 @@ import java.nio.file.{Files, Paths}
 
   // Define the AST types
   defineAst(outputDir, "Expr", List(
+    "Ternary  -> condition: Expr, ifOperator: Token, thenExpr: Expr, elseOperator: Token, elseExpr: Expr",
     "Binary   -> left: Expr, operator: Token, right: Expr",
     "Grouping -> expression: Expr",
     "Literal  -> value: Any",

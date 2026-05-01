@@ -1,4 +1,3 @@
-//> using dep org.scalameta::munit::1.3.0
 package slox
 
 import java.nio.charset.StandardCharsets

@@ -1,4 +1,3 @@
-//> using scala 3.7.3
 package slox
 
 import java.io.IOException

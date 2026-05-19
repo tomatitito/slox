@@ -1,4 +1,5 @@
-expression     = comma ;
+expression     = binary_error | comma ;
+binary_error   = ( "!=" | "==" | ">" | ">=" | "<" | "<=" | "+" | "-" | "/" | "*" ) ;
 comma          = equality ("," equality)* ; 
 equality       = comparison ( ( "!=" | "==" ) comparison )* ;
 comparison     = term ( ( ">" | ">=" | "<" | "<=" ) term )* ;

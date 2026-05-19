@@ -7,6 +7,15 @@ import slox.Expr.{Binary, Literal, Ternary}
 class ParserSuite extends munit.FunSuite:
   val eof = new Token(TokenType.EOF, null, null, 1)
 
+  test("parses and empty input") {
+    val parserInput = List(eof)
+    val underTest = new Parser(parserInput)
+
+    val actual = underTest.parse()
+
+    assertEquals(actual, null)
+  }
+
   test("parses a single digit") {
     val digitLiteral = Literal(42)
     val digitToken = new Token(TokenType.NUMBER, "42", 42, 1)
@@ -167,6 +176,40 @@ class ParserSuite extends munit.FunSuite:
       Literal(3)
     )
     val actual = underTest.parse()
+
+    assertEquals(actual, expected)
+  }
+
+  test("discards a binary expression without it's first operand when second operand is a literal") {
+    val op = new Token(TokenType.PLUS, "+", null, 1)
+    val secondOperand = new Token(TokenType.NUMBER, "42", 42, 1)
+    val comma = new Token(TokenType.COMMA, ",", ",", 1)
+    val restOfFile = new Token(TokenType.NUMBER, "43", 43, 1)
+
+    val parserInput = List(op, secondOperand, comma, restOfFile, eof)
+    val underTest = new Parser(parserInput)
+    val actual = underTest.parse()
+    val expected = Literal(43)
+
+    assertEquals(actual, expected)
+  }
+
+  test(
+    "discards a binary expression without it's first operand when second operand is not a literal"
+  ) {
+    val op = new Token(TokenType.PLUS, "+", null, 1)
+    val secondOperand = List(
+      new Token(TokenType.NUMBER, "42", 42, 1),
+      new Token(TokenType.MINUS, "-", "-", 1),
+      new Token(TokenType.NUMBER, "5", 5, 1)
+    )
+    val comma = new Token(TokenType.COMMA, ",", ",", 1)
+    val restOfFile = new Token(TokenType.NUMBER, "43", 43, 1)
+
+    val parserInput = List(op) ::: secondOperand ::: List(comma, restOfFile, eof)
+    val underTest = new Parser(parserInput)
+    val actual = underTest.parse()
+    val expected = Literal(43)
 
     assertEquals(actual, expected)
   }

@@ -64,4 +64,4 @@ private def report(line: Int, where: String, message: String): Unit =
   hadError = true
   
 def error(token: Token, message: String): Unit =
-  if token.`type` == TokenType.EOF then report(token.line, "at end", message) else report(token.line, s"at ${token.lexeme}", message)
+  if token.`type` == TokenType.EOF then report(token.line, " at end", message) else report(token.line, s" at `${token.lexeme}`", message)

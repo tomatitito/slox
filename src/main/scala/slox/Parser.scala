@@ -1,38 +1,65 @@
 package slox
 
 import slox.Expr.Unary
-import scala.caps.consume
 import slox.{error as LoxError}
 import scala.compiletime.ops.double
 
 class Parser(tokens: List[Token]):
   private var current = 0
   private var ternaryCondition: Expr | Null = null
-  
-  def parse() = 
-    try
-      expression()
-    catch
-      case _: ParseError => null
+
+  def parse() =
+    try expression()
+    catch case _: ParseError => null
 
   private def expression(): Expr =
-    val expr = comma()
+    val expr = binaryError()
     if !isAtEnd() & matchToken(TokenType.TERNARY_IF) then
       val condition = expr
       val ifOperator = previous()
       val thenExpr = expression()
-      val elseOperator = consume(TokenType.TERNARY_ELSE, "Expect ':' after then branch of ternary expression.")
+      val elseOperator = consume(
+        TokenType.TERNARY_ELSE,
+        "Expect ':' after then branch of ternary expression."
+      )
       val elseExpr = expression()
       Expr.Ternary(condition, ifOperator, thenExpr, elseOperator, elseExpr)
     else expr
-    
-  private def comma(): Expr = 
+
+  private def binaryError(): Expr =
+    if matchToken(
+        TokenType.EQUAL_EQUAL,
+        TokenType.BANG_EQUAL,
+        TokenType.GREATER,
+        TokenType.GREATER_EQUAL,
+        TokenType.LESS,
+        TokenType.LESS_EQUAL,
+        TokenType.PLUS,
+        TokenType.MINUS,
+        TokenType.SLASH,
+        TokenType.STAR
+      )
+    then 
+      // matchToken found a binary operator without it's first operand
+      // advance() was called! (current += 1)
+      // we are now "on" the second operand
+      val op = previous()
+      val _ = error(op, "missing operand for binary expression")
+      var xs = List.empty
+      while !check(TokenType.COMMA) do 
+        val x = advance()
+        xs.appended(x)
+      val _ = advance()
+      comma()
+    else comma()
+
+  private def comma(): Expr =
     var expr = equality()
-    
-    while matchToken(TokenType.COMMA) do 
+
+    while matchToken(TokenType.COMMA) do
       val op = previous()
       val right = equality()
-      expr = right 
+      expr = right
     expr
 
   private def equality(): Expr =
@@ -97,7 +124,7 @@ class Parser(tokens: List[Token]):
         consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
         Expr.Grouping(expr)
       case _ => throw error(currentToken, "Expect expression.")
-      
+
   private def matchToken(ts: TokenType*): Boolean =
     val currentToken = peek()
     if ts.contains(currentToken.`type`) then
@@ -107,7 +134,7 @@ class Parser(tokens: List[Token]):
 
   private def consume(token: TokenType, message: String): Token =
     if check(token) then advance() else throw error(peek(), message)
-    
+
   private def check(t: TokenType): Boolean = tokens(current).`type` == t
 
   private def advance(): Token =
@@ -120,11 +147,11 @@ class Parser(tokens: List[Token]):
   private def previous(): Token = tokens(current - 1)
 
   private def isAtEnd(): Boolean = tokens(current).`type` == TokenType.EOF
-  
+
   private def error(token: Token, message: String): ParseError =
     LoxError(token, message)
     return new ParseError()
-  
+
   private class ParseError() extends RuntimeException
-  
+
 end Parser

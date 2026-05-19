@@ -40,7 +40,7 @@ private def runPrompt(args: String*): Unit =
   while (true) {
     print("> ")
     val line = reader.readLine()
-    if (line == null) {
+    if (line.lengthIs == 0) {
       return
     }
     run(line)

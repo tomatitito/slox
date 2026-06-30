@@ -19,6 +19,8 @@ import java.nio.file.{Files, Paths}
     "Unary    -> operator: Token, right: Expr"
   ))
 
+  defineAst(outputDir, "Stmt", List("Expression : Expr expression", "Print : Expr expression"))
+
 def defineAst(outputDir: String, baseName: String, types: List[String]): Unit =
   val path = s"$outputDir/$baseName.scala"
   val writer = new PrintWriter(path, "UTF-8")

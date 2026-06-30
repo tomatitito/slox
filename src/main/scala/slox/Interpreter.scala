@@ -86,5 +86,20 @@ class Interpreter extends Expr.Visitor[Matchable]:
       case (null, _)    => false
       case (x, y)       => x == y
 
+  def stringify(m: Matchable): String = 
+    m match
+      case null => "nil"
+      case d: Double =>
+        val text = d.toString()
+        if text.endsWith(".0") then text.substring(0, text.length() - 2) else text
+      case _ => m.toString()
+
   def evaluate(expr: Expr): Matchable = expr.accept(this)
+
+  def interpret(expr: Expr) = 
+    try
+      val value = evaluate(expr)
+      println(stringify(value))
+    catch 
+      case (error: RuntimeError) => runtimeError(error)
 end Interpreter

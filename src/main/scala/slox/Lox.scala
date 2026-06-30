@@ -24,12 +24,16 @@ end Lox
 def msg = "I was compiled by Scala 3. :)"
 
 var hadError = false
+var hadRuntimeError = false
+
+val interpreter = Interpreter()
 
 @throws[IOException]
 private def runFile(path: String): Unit =
   val bytes = Files.readAllBytes(Paths.get(path))
   run(new String(bytes, Charset.defaultCharset()))
   if (hadError) then System.exit(65)
+  if (hadRuntimeError) then System.exit(70)
 end runFile
 
 @throws[IOException]
@@ -49,15 +53,20 @@ private def runPrompt(args: String*): Unit =
 end runPrompt
 
 private def run(source: String): Unit =
-  val scanner = Scanner(source) // to be implemented
+  val scanner = Scanner(source)
   val tokens = scanner.scanTokens()
   val expression = new Parser(tokens).parse()
-  val astPrinter = new AstPrinter()
-  astPrinter.print(expression)
+  interpreter.interpret(expression)
+  // val astPrinter = new AstPrinter()
+  // astPrinter.print(expression)
 end run
 
 private def error(line: Int, message: String): Unit =
   report(line, "", message)
+
+private def runtimeError(error: RuntimeError) =
+  println(f"${error.getMessage()} \n[line ${error.token.line}")
+  hadRuntimeError = true
 
 private def report(line: Int, where: String, message: String): Unit =
   System.err.println(s"[line $line] Error$where: $message")

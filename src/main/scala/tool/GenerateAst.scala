@@ -26,7 +26,7 @@ import java.nio.file.{Files, Paths}
   defineAst(
     outputDir,
     "Stmt",
-    List("Expression : Expr expression", "Print : Expr expression")
+    List("Expression -> expression: Expr", "Print -> expression: Expr")
   )
 
 def defineAst(outputDir: String, baseName: String, types: List[String]): Unit =

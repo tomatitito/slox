@@ -1,3 +1,7 @@
+program        = statement* EOF ;
+statement      = exprStmt | printStmt ;
+exprStmt       = expression ";" ;
+printStmt      = "print" expression ";" ;
 expression     = binary_error | comma ;
 binary_error   = ( "!=" | "==" | ">" | ">=" | "<" | "<=" | "+" | "-" | "/" | "*" ) ;
 comma          = equality ("," equality)* ; 

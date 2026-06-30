@@ -11,15 +11,23 @@ import java.nio.file.{Files, Paths}
   val outputDir = args(0)
 
   // Define the AST types
-  defineAst(outputDir, "Expr", List(
-    "Ternary  -> condition: Expr, ifOperator: Token, thenExpr: Expr, elseOperator: Token, elseExpr: Expr",
-    "Binary   -> left: Expr, operator: Token, right: Expr",
-    "Grouping -> expression: Expr",
-    "Literal  -> value: Any",
-    "Unary    -> operator: Token, right: Expr"
-  ))
+  defineAst(
+    outputDir,
+    "Expr",
+    List(
+      "Ternary  -> condition: Expr, ifOperator: Token, thenExpr: Expr, elseOperator: Token, elseExpr: Expr",
+      "Binary   -> left: Expr, operator: Token, right: Expr",
+      "Grouping -> expression: Expr",
+      "Literal  -> value: Any",
+      "Unary    -> operator: Token, right: Expr"
+    )
+  )
 
-  defineAst(outputDir, "Stmt", List("Expression : Expr expression", "Print : Expr expression"))
+  defineAst(
+    outputDir,
+    "Stmt",
+    List("Expression : Expr expression", "Print : Expr expression")
+  )
 
 def defineAst(outputDir: String, baseName: String, types: List[String]): Unit =
   val path = s"$outputDir/$baseName.scala"
@@ -33,32 +41,39 @@ def defineAst(outputDir: String, baseName: String, types: List[String]): Unit =
 
     // Base trait
     writer.println(s"sealed trait $baseName:")
-      writer.println(s"  def accept[R](visitor: $baseName.Visitor[R]): R")
+    writer.println(s"  def accept[R](visitor: $baseName.Visitor[R]): R")
     writer.println()
 
     // Companion object with Visitor trait
     writer.println(s"object $baseName:")
-      writer.println(s"  trait Visitor[R]:")
-      for typeStr <- types do
-        val className = typeStr.split("->")(0).trim
-        writer.println(s"    def visit$className$baseName(${baseName.toLowerCase}: $className): R")
-      writer.println()
+    writer.println(s"  trait Visitor[R]:")
+    for typeStr <- types do
+      val className = typeStr.split("->")(0).trim
+      writer.println(
+        s"    def visit$className$baseName(${baseName.toLowerCase}: $className): R"
+      )
+    writer.println()
 
-      // Generate each subclass
-      for typeStr <- types do
-        val parts = typeStr.split("->")
-        val className = parts(0).trim
-        val fields = parts(1).trim
-        defineType(writer, baseName, className, fields)
-  finally
-    writer.close()
+    // Generate each subclass
+    for typeStr <- types do
+      val parts = typeStr.split("->")
+      val className = parts(0).trim
+      val fields = parts(1).trim
+      defineType(writer, baseName, className, fields)
+  finally writer.close()
 
   println(s"Generated $path")
 
-def defineType(writer: PrintWriter, baseName: String, className: String, fieldList: String): Unit =
+def defineType(
+    writer: PrintWriter,
+    baseName: String,
+    className: String,
+    fieldList: String
+): Unit =
   // Parse fields
-  val fields = if fieldList.isEmpty then List.empty else
-    fieldList.split(",").map(_.trim).toList
+  val fields =
+    if fieldList.isEmpty then List.empty
+    else fieldList.split(",").map(_.trim).toList
 
   // Generate case class
   writer.print(s"  case class $className(")
